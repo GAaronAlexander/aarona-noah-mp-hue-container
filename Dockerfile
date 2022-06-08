@@ -1,34 +1,7 @@
 # syntax=docker/dockerfile:1.0.2-experimental
 # Start first stage of build
-# FROM registry.gitlab.com/jupiterintel/baseimages/ubuntu-minimal:0.1.0 AS base
-FROM ubuntu:18.04 AS base
-
-# From the minimal unbuntu that has been installed in jupiter
-ENV DEBIAN_FRONTEND noninteractive
-
-WORKDIR /opt
-
-# Add Tini - https://github.com/krallin/tini/releases/download/v0.18.0/tini
-COPY dependencies/tini-0.18.0 /tini
-RUN chmod +x /tini
-
-COPY scripts /usr/local/bin/ 
-
-# install_base.sh enables the locale, set the ENV after that
-# but before installing additional libs
-RUN install_base.sh
-ENV LANGUAGE en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LC_ALL en_US.UTF-8
-
-# ssl-certs
-RUN install_openssh.sh
-ENV CURL_CA_BUNDLE /etc/ssl/certs/ca-certificates.crt
-
-# Install common HTTP tools
-RUN install_web_tools.sh
-
-COPY version /version
+#FROM registry.gitlab.com/jupiterintel/baseimages/ubuntu-minimal:0.1.0 AS base
+FROM ubuntu-minimal AS base 
 
 # From here on, this is now Callies docker file!
 
