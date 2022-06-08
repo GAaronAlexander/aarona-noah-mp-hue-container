@@ -1,0 +1,25 @@
+# This file may be used to create an environment using:
+# $ conda create --name <env> --file <this file>
+# platform: osx-64
+#
+# For the time being setuptools is set to a specific version as setuptools>=60.0 breaks
+# jupiter logger (fails to build and install). Before release this issue will be resolved by 
+# setting the SETUPTOOLS_USE_DISUTILS=stdlib in the dockerfile). 
+zlib
+libpng
+jasper
+hdf5
+netcdf4
+netcdf-fortran
+gcc
+gxx
+gfortran
+xarray
+pydantic
+typing
+dataclasses
+f90nml
+pyyaml
+cdsapi
+cryptography
+binutils

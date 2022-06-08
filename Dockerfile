@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1.0.2-experimental
 # Start first stage of build
-FROM registry.gitlab.com/jupiterintel/baseimages/ubuntu-minimal:0.1.0 AS base
+# FROM registry.gitlab.com/jupiterintel/baseimages/ubuntu-minimal:0.1.0 AS base
+FROM ubuntu:18.04 AS base
 
 #FROM registry.gitlab.com/jupiterintel/baseimages/centos7:0.1.1
 LABEL maintainer="Callie McNicholas <callie.mcnicholas@jupiterintel.com>"
@@ -14,6 +15,9 @@ ENV WRF_VERSION=4.3.3 \
 # Avoid writting pyc or pyo files to save space
 ENV PYTHONDONTWRITEBYTECODE=true
 
+# 
+RUN apt-get update && \
+    apt-get install -y curl file
 # Get the license from NCAR
 RUN curl -SL https://ral.ucar.edu/sites/default/files/public/projects/ncar-docker-wrf/ucar-bsd-3-clause-license.pdf > /UCAR-BSD-3-Clause-License.pdf
 # Setup input/output directories for WRF as well as directories for input model data
@@ -25,11 +29,11 @@ mkdir ${ROOT_PATH}/wrfdata/real && mkdir ${ROOT_PATH}/wrfdata/wrf && \
 mkdir ${ROOT_PATH}/data_sources && mkdir ${ROOT_PATH}/data_sources/ERA5
 
 #  Copy container files
-COPY configs ${APP_PATH}/configs
-COPY input_models ${APP_PATH}/input_models
-COPY main ${APP_PATH}/main
-COPY tests ${APP_PATH}/tests
-COPY utilities ${APP_PATH}/utilities
+#COPY configs ${APP_PATH}/configs
+#COPY input_models ${APP_PATH}/input_models
+#COPY main ${APP_PATH}/main
+#COPY tests ${APP_PATH}/tests
+#COPY utilities ${APP_PATH}/utilities
 COPY * ${APP_PATH}/
 
 # Retrieve miniconda from URL
@@ -57,10 +61,10 @@ rm -rf ${CONDA_DIR}/lib/*_avx512* && \
 rm -rf ${CONDA_DIR}/lib/*_avx.* 
 
 # Install pip libraries
-RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
-RUN --mount=type=ssh bash -c "mkdir -p -m 0600 ~/.ssh && ssh-keyscan gitlab.com >> ~/.ssh/known_hosts"
-RUN --mount=type=ssh pip install --ignore-installed --no-cache-dir -r ${APP_PATH}/pip_requirements.txt
-RUN --mount=type=ssh pip install --ignore-installed --no-cache-dir -e ${APP_PATH}
+#RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
+#RUN --mount=type=ssh bash -c "mkdir -p -m 0600 ~/.ssh && ssh-keyscan gitlab.com >> ~/.ssh/known_hosts"
+#RUN --mount=type=ssh pip install --ignore-installed --no-cache-dir -r ${APP_PATH}/pip_requirements.txt
+#RUN --mount=type=ssh pip install --ignore-installed --no-cache-dir -e ${APP_PATH}
 
 # Retrieve WRF and WPS from github
 RUN curl -SL https://github.com/wrf-model/WRF/archive/refs/tags/v${WRF_VERSION}.tar.gz | tar zxC ${ROOT_PATH} \
@@ -70,7 +74,9 @@ RUN curl -SL https://github.com/wrf-model/WRF/archive/refs/tags/v${WRF_VERSION}.
 && curl -SL https://ral.ucar.edu/sites/default/files/public/projects/ncar-docker-wrf/ucar-bsd-3-clause-license.pdf > /UCAR-BSD-3-Clause-License.pdf
 
 # Start second stage of build
-FROM registry.gitlab.com/jupiterintel/baseimages/ubuntu-minimal:0.1.0 AS refactor_batch
+#FROM registry.gitlab.com/jupiterintel/baseimages/ubuntu-minimal:0.1.0 AS refactor_batch
+FROM ubuntu:18.04 AS refactor_batch
+
 # Install relevant libraries
 RUN apt-get update && apt-get install -y --no-install-recommends unzip csh make m4 file && \
 apt-get autoclean -y && \
