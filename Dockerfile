@@ -50,17 +50,17 @@ ENV PATH=/miniconda/bin:$PATH
 COPY condarc /root/.condarc
 
 # Install conda libraries and remove unnecessary files
-RUN conda update -n base -c defaults conda && conda install -c conda-forge mamba && \
-mamba install -y -c conda-forge --file ${APP_PATH}/conda_requirements.txt && \
-mamba clean --all -yq && \
-find ${CONDA_DIR} -type f -name '*.pyc' -exec rm -f {} \; && \
-find ${CONDA_DIR} -type f -name '*.js.map*' -exec strip --strip-all {} \; && \
-rm -rf ${CONDA_DIR}/pkgs && \
-rm -rf ${CONDA_DIR}/lib/*_mc.so && \
-rm -rf ${CONDA_DIR}/lib/*_mc2.so && \
-rm -rf ${CONDA_DIR}/lib/*_mc3.so && \
-rm -rf ${CONDA_DIR}/lib/*_avx512* && \
-rm -rf ${CONDA_DIR}/lib/*_avx.* 
+RUN conda update -n base -c defaults conda && \
+ conda install -y -c conda-forge --file ${APP_PATH}/conda_requirements.txt && \ 
+ conda clean --all -yq && \
+ find ${CONDA_DIR} -type f -name '*.pyc' -exec rm -f {} \; && \
+ find ${CONDA_DIR} -type f -name '*.js.map*' -exec strip --strip-all {} \; && \
+ rm -rf ${CONDA_DIR}/pkgs && \
+ rm -rf ${CONDA_DIR}/lib/*_mc.so && \
+ rm -rf ${CONDA_DIR}/lib/*_mc2.so && \
+ rm -rf ${CONDA_DIR}/lib/*_mc3.so && \
+ rm -rf ${CONDA_DIR}/lib/*_avx512* && \
+ rm -rf ${CONDA_DIR}/lib/*_avx.* 
 
 # Install pip libraries
 #RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
@@ -134,10 +134,13 @@ RUN export NETCDF=${NETCDF} \
     && sed -i -e 's?LDFLAGS.*?LDFLAGS             = -lgomp?' ./configure.wps \ 
     && ./compile \ 
     && scp ${ROOT_PATH}/WPS/ungrib/Variable_Tables/Vtable.ERA-interim.pl ${ROOT_PATH}/WPS/ungrib/Variable_Tables/Vtable.ERA5 \
-    && mv ${APP_PATH}/tests/test_files/test_run_files/*.grib ${ROOT_PATH}/data_sources/ERA5/ \
-    && rm -rf ${APP_PATH}/tests/test_files/test_run_files \
     && chmod +x ${APP_PATH}/docker-clean \
     && ${APP_PATH}/docker-clean
+    
+#    && mv ${APP_PATH}/tests/test_files/test_run_files/*.grib ${ROOT_PATH}/data_sources/ERA5/ \
+#    && rm -rf ${APP_PATH}/tests/test_files/test_run_files \
+#    && chmod +x ${APP_PATH}/docker-clean \
+#    && ${APP_PATH}/docker-clean
 
 # Start bash
 CMD ["/bin/bash"]
