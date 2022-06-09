@@ -79,7 +79,7 @@ RUN curl -SL https://github.com/wrf-model/WRF/archive/refs/tags/v${WRF_VERSION}.
 #FROM registry.gitlab.com/jupiterintel/baseimages/ubuntu-minimal:0.1.0 AS refactor_batch
 FROM ubuntu:18.04 AS refactor_batch
 
-# Install relevant libraries
+# Install relevant libraries (added scp Aaron A.)
 RUN apt-get update && apt-get install -y --no-install-recommends unzip csh make m4 file && \
 apt-get autoclean -y && \
 apt-get autoremove -y && \
@@ -133,11 +133,11 @@ RUN export NETCDF=${NETCDF} \
     && sed -i -e 's?/usr/bin/cpp?/miniconda/bin/cpp?' ./configure.wps \
     && sed -i -e 's?LDFLAGS.*?LDFLAGS             = -lgomp?' ./configure.wps \ 
     && ./compile \ 
-    && scp ${ROOT_PATH}/WPS/ungrib/Variable_Tables/Vtable.ERA-interim.pl ${ROOT_PATH}/WPS/ungrib/Variable_Tables/Vtable.ERA5 \
     && chmod +x ${APP_PATH}/docker-clean \
     && ${APP_PATH}/docker-clean
-    
+
 #    && mv ${APP_PATH}/tests/test_files/test_run_files/*.grib ${ROOT_PATH}/data_sources/ERA5/ \
+#    && scp ${ROOT_PATH}/WPS/ungrib/Variable_Tables/Vtable.ERA-interim.pl ${ROOT_PATH}/WPS/ungrib/Variable_Tables/Vtable.ERA5 \
 #    && rm -rf ${APP_PATH}/tests/test_files/test_run_files \
 #    && chmod +x ${APP_PATH}/docker-clean \
 #    && ${APP_PATH}/docker-clean
