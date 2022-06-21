@@ -142,5 +142,18 @@ RUN export NETCDF=${NETCDF} \
 #    && chmod +x ${APP_PATH}/docker-clean \
 #    && ${APP_PATH}/docker-clean
 
+## Everything below has been added by Aaron A. 
+# Adding a new "layer"
+ARG NOAHMP=/home/jupiter/model/noahmp 
+
+# create a new layer to download files into
+RUN mdkir $NOAHMP 
+
+#Grab this from Aaron A.'s GITHUB 
+RUN curl -SL https://github.com/https://github.com/GAaronAlexander/NOAH-MP_HUE/tarball/master | tar zxC ${NOAHMP} \
+&& mv ${NOAHMP}/NOAH-MP_HUE-master ${NOAHMP}/NOAHMP-HUE \
+
+
 # Start bash
 CMD ["/bin/bash"]
+
