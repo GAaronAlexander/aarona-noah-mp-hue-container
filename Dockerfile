@@ -123,7 +123,7 @@ RUN export NETCDF=${NETCDF} \
     && export CXX=${CXX}} \
     && export FC=${FC} \
     && cd ${ROOT_PATH}/WRF \
-    && echo '33\r1\r' > config.in \
+    && echo '35\r5\r' > config.in \
     && ./configure < config.in \
     && sed -i -e 's?/lib/cpp?/miniconda/bin/cpp?' ./configure.wrf \
     && ./compile em_real \
@@ -153,9 +153,9 @@ RUN mdkir $NOAHMP
 RUN curl -SL https://github.com/https://github.com/GAaronAlexander/NOAH-MP_HUE/tarball/master | tar zxC ${NOAHMP} \
 && mv ${NOAHMP}/NOAH-MP_HUE-master ${NOAHMP}/NOAHMP-HUE \
 
-RUN cd ${NOAHMP}/NOAHMP-HUE/hrldas \ 
-    && echo '5\r' > config.in \
-    && ./configure < config.in \
+#RUN cd ${NOAHMP}/NOAHMP-HUE/hrldas \ 
+   # && echo '5\r' > config.in \
+    #&& ./configure < config.in \
 
 
 
