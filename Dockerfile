@@ -153,6 +153,11 @@ RUN mdkir $NOAHMP
 RUN curl -SL https://github.com/https://github.com/GAaronAlexander/NOAH-MP_HUE/tarball/master | tar zxC ${NOAHMP} \
 && mv ${NOAHMP}/NOAH-MP_HUE-master ${NOAHMP}/NOAHMP-HUE \
 
+RUN cd ${NOAHMP}/NOAHMP-HUE/hrldas \ 
+    && echo '5\r' > config.in \
+    && ./configure < config.in \
+
+
 
 # Start bash
 CMD ["/bin/bash"]
