@@ -144,14 +144,14 @@ RUN export NETCDF=${NETCDF} \
 
 ## Everything below has been added by Aaron A. 
 # Adding a new "layer"
-ARG NOAHMP=/home/jupiter/model/noahmp 
+#ARG NOAHMP=/home/jupiter/model/noahmp 
 
 # create a new layer to download files into
-RUN mdkir $NOAHMP 
+#RUN mdkir $NOAHMP 
 
 #Grab this from Aaron A.'s GITHUB 
-RUN curl -SL https://github.com/https://github.com/GAaronAlexander/NOAH-MP_HUE/tarball/master | tar zxC ${NOAHMP} \
-&& mv ${NOAHMP}/NOAH-MP_HUE-master ${NOAHMP}/NOAHMP-HUE \
+#RUN curl -SL https://github.com/https://github.com/GAaronAlexander/NOAH-MP_HUE/tarball/master | tar zxC ${NOAHMP} \
+#&& mv ${NOAHMP}/NOAH-MP_HUE-master ${NOAHMP}/NOAHMP-HUE \
 
 #RUN cd ${NOAHMP}/NOAHMP-HUE/hrldas \ 
    # && echo '5\r' > config.in \
