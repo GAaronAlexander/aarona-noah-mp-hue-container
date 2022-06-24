@@ -15,6 +15,7 @@ gcc
 gxx
 gfortran
 openmpi
+git
 xarray
 pydantic
 typing

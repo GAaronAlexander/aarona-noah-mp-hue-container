@@ -150,9 +150,8 @@ ARG NOAHMP=/home/jupiter/model/noahmp
 RUN mkdir $NOAHMP 
 
 #Grab this from Aaron A.'s GITHUB 
-RUN git clone https://github.com/GAaronAlexander/NOAH-MP_HUE.git
-
-RUN cd ${NOAHMP}/NOAH-MP_HUE/hrldas  \
+RUN git clone https://github.com/GAaronAlexander/NOAH-MP_HUE.git ${NOAHMP}\
+    && cd ${NOAHMP}/hrldas  \
     && rm user_build_options \
     && ln -s user_build_options.gfortran.cloud.parallel user_build_options \ 
     && make clean \
