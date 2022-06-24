@@ -125,7 +125,7 @@ RUN export NETCDF=${NETCDF} \
     && cd ${ROOT_PATH}/WRF \
     && echo '35\r5\r' > config.in \
     && ./configure < config.in \
-    && sed -i -e '$' ./configure.wrf \
+    && sed -i -e 's?/lib/cpp?/miniconda/bin/cpp?' ./configure.wrf \
     && ./compile em_real \
     && cd ${ROOT_PATH}/WPS \
     && echo '1\r' > config.in \
@@ -147,10 +147,10 @@ RUN export NETCDF=${NETCDF} \
 ARG NOAHMP=/home/jupiter/model/noahmp 
 
 # create a new layer to download files into
-RUN mdkir $NOAHMP 
+RUN mkdir $NOAHMP 
 
 #Grab this from Aaron A.'s GITHUB 
-RUN curl -SL https://github.com/https://github.com/GAaronAlexander/NOAH-MP_HUE/tarball/master | tar zxC ${NOAHMP} \
+RUN curl -SL https://github.com/https://github.com/GAaronAlexander/NOAH-MP_HUE/tarball/master | tar xC ${NOAHMP} \
     && mv ${NOAHMP}/NOAH-MP_HUE-master ${NOAHMP}/NOAHMP-HUE \
 
 RUN cd ${NOAHMP}/NOAHMP-HUE/hrldas  \
