@@ -13,7 +13,7 @@ This code assumes that you are going to start at the BEGINNING OF A MONTH to gen
 start_date_want = '2010-06-01' #set
 end_date_want = '2010-11-01' #set
 freq_want = '1H' #era5 is 1H
-save_location = './'
+save_location = './' #needs to be set
 
 ## create a list of inputs to loop over (data is ERA5, NAME is the names HRLDAS is looking for)
 data_varaibles = [f'air_temperature_at_2_metres',f'surface_air_pressure',f'dew_point_temperature_at_2_metres',
