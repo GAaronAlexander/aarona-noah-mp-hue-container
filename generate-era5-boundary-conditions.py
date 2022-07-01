@@ -13,7 +13,7 @@ This code assumes that you are going to start at the BEGINNING OF A MONTH to gen
 start_date_want = '2010-06-01' #set
 end_date_want = '2010-11-01' #set
 freq_want = '1H' #era5 is 1H
-save_location = './' #needs to be set
+save_location = './'
 
 ## create a list of inputs to loop over (data is ERA5, NAME is the names HRLDAS is looking for)
 data_varaibles = [f'air_temperature_at_2_metres',f'surface_air_pressure',f'dew_point_temperature_at_2_metres',
@@ -58,11 +58,11 @@ def get_region_era5(era5,geo):
     
     """
     Takes an era5 file, and a geogrid file, and then calculates the start and end points 
-    of the era5 file based on the geogrid file. Adds 2 to each edge of the ERA5 data for 
+    of the era5 file based on the geogrid file. Adds 3 to each edge of the ERA5 data for 
     a safety protocol
     """
     
-    ## determine the nearest coordinates of the geogrid file, and then add 2 to it to be safe
+    ## determine the nearest coordinates of the geogrid file, and then add 3
     lonsv, latsv = np.meshgrid(-360+era5.lon.values,era5.lat.values)
     ## get the id of the lons from geogrid
     LON_start = np.abs(lonsv - geo.lon[0,0].values)
@@ -70,8 +70,8 @@ def get_region_era5(era5,geo):
 
     idx_lonstart = np.where(LON_start == LON_start.min())
     idx_lonend = np.where(LON_end == LON_end.min())
-    input_lonstart = idx_lonstart[1][0]-2
-    input_lonend = idx_lonend[1][0]+2
+    input_lonstart = idx_lonstart[1][0]-3
+    input_lonend = idx_lonend[1][0]+3
 
 
     ## get the id of the lats from geogrid
@@ -80,8 +80,8 @@ def get_region_era5(era5,geo):
 
     idx_latstart = np.where(LAT_start == LAT_start.min())
     idx_latend = np.where(LAT_end == LAT_end.min())
-    input_latstart = idx_latstart[0][0]+2
-    input_latend = idx_latend[0][0]-2
+    input_latstart = idx_latstart[0][0]+3
+    input_latend = idx_latend[0][0]-3
     
     return(input_lonstart,input_lonend,input_latend,input_latstart) # order due to the way era5 defines coordinates
 
@@ -97,11 +97,15 @@ def transform_era5_to_dataarray_2d(dsubset):
 
     data_array_input = xr.Dataset(
         {
-        name_variables[0]:(["y","x"],dsubset[0,:,:].values),
+        name_variables[0]:(["y","x"],dsubset[0,1:-1,1:-1].values),
         }
         ,coords={
-            "lat": (["y","x"],latsv),
-            "lon": (["y","x"], lonsv),
+            "lat": (["y","x"],latsv[1:-1,1:-1]),
+            "lon": (["y","x"], lonsv[1:-1,1:-1]),
+            "lat_b": (["y_b","x_b"], 0.25*(latsv[:-1,:-1]+latsv[1:,1:]+latsv[1:,:-1]+latsv[:-1,1:])),
+            "lon_b": (["y_b","x_b"], 0.25*(lonsv[:-1,:-1]+lonsv[1:,1:]+lonsv[1:,:-1]+lonsv[:-1,1:])),
+            
+            
         }
     )   
     return(data_array_input)
@@ -118,11 +122,15 @@ def transform_era5_to_dataarray_3d(dsubset3d,name):
 
     data_array_input = xr.Dataset(
         {
-        name:(["time","y","x"],dsubset3d[:,:,:].values),
+        name:(["time","y","x"],dsubset3d[:,1:-1,1:-1].values),
         }
         ,coords={
-            "lat": (["y","x"],latsv),
-            "lon": (["y","x"], lonsv),
+            "lat": (["y","x"],latsv[1:-1,1:-1]),
+            "lon": (["y","x"], lonsv[1:-1,1:-1]),
+            "lat_b": (["y_b","x_b"], 0.25*(latsv[:-1,:-1]+latsv[1:,1:]+latsv[1:,:-1]+latsv[:-1,1:])),
+            "lon_b": (["y_b","x_b"], 0.25*(lonsv[:-1,:-1]+lonsv[1:,1:]+lonsv[1:,:-1]+lonsv[:-1,1:])),
+            
+            
         }
     )   
     return(data_array_input)
@@ -137,11 +145,14 @@ def get_regridder(grid_input,grid_out,option="bilinear"):
     regridder_weights=xesmf.Regridder(grid_input, grid_out, option)
     return(regridder_weights)
     
+######################################################################
 # begin actual code
 ds_out = xr.Dataset(
     {
         "lat": (["y","x"],geogrid.XLAT_M[0].values),
         "lon": (["y","x"], geogrid.XLONG_M[0].values),
+        "lat_b": (["y_b","x_b"],geogrid.XLAT_C[0].values),
+        "lon_b": (["y_b","x_b"],geogrid.XLONG_C[0].values)
     }
 )
 
@@ -162,16 +173,16 @@ data_array_era5 = transform_era5_to_dataarray_2d(_temp)
 
 ## now we get the regridder weights (only need this once)
 regridder_era5_to_geogrid = get_regridder(data_array_era5,ds_out)
+regridder_era5_to_geogrid_conserve = get_regridder(data_array_era5,ds_out,"conservative")
 
 ## works up to here!
-
 dates_to_loop = pd.date_range(start=start_date_want,end=end_date_want, freq=freq_want)
-date_year = str(dates_to_loop[719].year)
-date_month = str(dates_to_loop[719].month).zfill(2)
+date_year = str(dates_to_loop[0].year)
+date_month = str(dates_to_loop[0].month).zfill(2)
 
 variables_to_save = [None]*8   
         
-for ii, date in enumerate(dates_to_loop[719:]): # we loop over each of these values
+for ii, date in enumerate(dates_to_loop): # we loop over each of these values
     
     # naming convention is of the format
     # YYYYMMDDHH.LDASIN_DOMAIN1
@@ -227,7 +238,6 @@ for ii, date in enumerate(dates_to_loop[719:]): # we loop over each of these val
                 dset_loop_sm = dLW[:,subset_lat_start:subset_lat_end,subset_lon_start:subset_lon_end]/3600
                 dset_data_array = transform_era5_to_dataarray_3d(dset_loop_sm,name_variables[i])
                 
-                # Regrid and save to call later
                 variables_to_save[i] = regridder_era5_to_geogrid(dset_data_array)
                
             elif (i <= 6):
@@ -248,7 +258,11 @@ for ii, date in enumerate(dates_to_loop[719:]): # we loop over each of these val
                 dset_data_array = transform_era5_to_dataarray_3d(dset_loop_sm,name_variables[i])
 
                 ## regrid
-                variables_to_save[i] = regridder_era5_to_geogrid(dset_data_array)
+                ## do we need to conserve the data? 
+                if name_variables[i] == 'RAINRATE':
+                    variables_to_save[i] = regridder_era5_to_geogrid_conserve(dset_data_array)
+                else:
+                    variables_to_save[i] = regridder_era5_to_geogrid(dset_data_array)
         
         # get the specific humidity, and not dew point temp
         variables_to_save[2] = cal_specific_humid(variables_to_save[2],variables_to_save[1],name_variables[2],name_variables[1])
@@ -281,7 +295,7 @@ for ii, date in enumerate(dates_to_loop[719:]): # we loop over each of these val
     else:
         index_LW += 1
     
-    # now we create the dataset of interest
+    
     data_set_save = xr.Dataset(
         {
             name_variables[0]:xr.DataArray(
@@ -350,5 +364,5 @@ for ii, date in enumerate(dates_to_loop[719:]): # we loop over each of these val
           
     )
     
-    #and now we save!!
+    #save it!!
     data_set_save.to_netcdf(save_location+file_name)
