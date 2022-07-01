@@ -247,16 +247,20 @@ for ii, date in enumerate(dates_to_loop): # we loop over each of these values
                 fmap = s3fs.S3Map(f's3://era5-pds/zarr/'+date_year+'/'+date_month+f'/data/{data_varaibles[i]}.zarr', s3=fs)
                 dset_loop = xr.open_zarr(fmap, consolidated=True)
                 
+                
                 # if rain or if solar radiation, we divide by 3600. if anything else, we divide by 1 (keep it the same)
-                if (i == 5)or(i == 6):
+                if (i == 5):
                     divisor = 3600
+                elif (i == 6):
+                    divisor = 1000/3600 #rainfall is in m 
                 else:
                     divisor = 1
                 
                 # subset the data
                 dset_loop_sm = dset_loop[data_varaibles[i]][:,subset_lat_start:subset_lat_end,subset_lon_start:subset_lon_end]/divisor
                 dset_data_array = transform_era5_to_dataarray_3d(dset_loop_sm,name_variables[i])
-
+                print(dset_data_array)
+                
                 ## regrid
                 ## do we need to conserve the data? 
                 if name_variables[i] == 'RAINRATE':
@@ -364,5 +368,5 @@ for ii, date in enumerate(dates_to_loop): # we loop over each of these values
           
     )
     
-    #save it!!
+    
     data_set_save.to_netcdf(save_location+file_name)
