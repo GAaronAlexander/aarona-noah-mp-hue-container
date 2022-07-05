@@ -26,16 +26,7 @@ name_variables = [f'T2D',f'PSFC',f'Q2D',f'U2D',f'V2D',f'SWDOWN',f'RAINRATE','LWD
 ## this happens once
 geogrid = xr.open_dataset('./geogrid-files/geo_em.d01.milwaukee.nc')
 
-
-
-## these are from LUKE MADDAUS
 variable_name_longwave = 'surface_thermal_radiation_downwards'
-# file_name_LW = f'{variable_name}_1980_01-03.nc'
-
-#os.system(f'aws s3 cp s3://jupiter-reference-data/era5/rlds/{file_name} .')
-#darr = xr.open_dataset(file_name)[data_variable]
-#darr
-
 
 
 
