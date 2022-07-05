@@ -16,7 +16,7 @@ freq_want = '1H' #era5 is 1H
 save_location = './'
 
 ## create a list of inputs to loop over (data is ERA5, NAME is the names HRLDAS is looking for)
-data_varaibles = [f'air_temperature_at_2_metres',f'surface_air_pressure',f'dew_point_temperature_at_2_metres',
+data_variables = [f'air_temperature_at_2_metres',f'surface_air_pressure',f'dew_point_temperature_at_2_metres',
                  f'eastward_wind_at_10_metres',f'northward_wind_at_10_metres',
                  f'integral_wrt_time_of_surface_direct_downwelling_shortwave_flux_in_air_1hour_Accumulation',
                  f'precipitation_amount_1hour_Accumulation',f'strd']
