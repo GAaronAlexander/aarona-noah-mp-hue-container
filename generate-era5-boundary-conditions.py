@@ -276,20 +276,17 @@ def run(start_date, end_date, freq_want, save_location, geo_file):
                         variables_to_save[output_name] = regridder_era5_to_geogrid(dset_data_array[output_name])#makes this a dataarray
                     
                     ## meta data and fixing the attributes
-                    if (output_name == 'T2D'):
-                        variables_to_save[output_name].attrs = {'units':'K'}
-                    elif  (output_name == 'PSFC'):
-                        variables_to_save[output_name].attrs = {'units':'Pa'}
-                    elif  (output_name == 'Q2D'):
-                        variables_to_save[output_name].attrs = {'units':'Kg/kg'}
-                    elif  (output_name == 'U2D'):
-                        variables_to_save[output_name].attrs = {'units':'m/s'}
-                    elif  (output_name == 'V2D'):
-                        variables_to_save[output_name].attrs = {'units':'m/s'}
-                    elif  (output_name == 'SWDOWN'):
-                        variables_to_save[output_name].attrs = {'units':'W/m^2'}
-                    elif  (output_name == 'RAINRATE'):
-                        variables_to_save[output_name].attrs = {'units':'mm/s'}
+                    units = {
+                        'T2D' : 'K',
+                        'PSFC' : 'Pa',
+                        'Q2D' : 'Kg/kg',
+                        'U2D' :'m/s',
+                        'V2D' : 'm/s',
+                        'SWDOWN' : 'W/m^2',
+                        'RAINRATE' : 'mm/s',
+                    }
+                    variables_to_save[output_name].attrs = {'units' : units[output_name]}
+
                         
                     variables_to_save[output_name] = variables_to_save[output_name].reset_coords(drop=True)
                     variables_to_save[output_name] = variables_to_save[output_name].swap_dims({'time':'Time','y':'south_north','x':'west_east'})
