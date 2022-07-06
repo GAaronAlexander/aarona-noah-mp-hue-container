@@ -1,0 +1,5 @@
+## Things that need to be ignored!
+
+*.ipynb_checkpoint*
+*.DS_store*
+*.nc

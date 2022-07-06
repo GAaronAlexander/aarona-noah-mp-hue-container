@@ -1,0 +1,78 @@
+#!/bin/bash
+
+# Script to clean up WRF and WPS directories to remove
+# all source and built files, leaving only executables 
+# and required libraries, data files, etc.
+
+# LEM -- Remove the entire libraries directory...only
+# NETCDF built and that has been installed to /usr/local
+# rm -rf /LIBRARIES
+
+WRF_BUILD="/home/jupiter/model/wrf"
+
+# LEM -- Remove the tarfiles
+cd $WRF_BUILD
+rm -f *.TAR.gz
+
+# Start with WRF
+cd $WRF_BUILD/WRF
+
+rm -f README* Makefile clean compile configure configure.wrf
+
+rm -rf Registry arch dyn_em dyn_exp dyn_nmm external frame \
+       inc phys share test tools
+
+cd $WRF_BUILD/WRF/main
+rm -f *.F *.f90 *.o *.mod *.a *.c Makefile depend.common 
+
+# LEM -- remove the hydro, chem, var and tanget-linear files in v4
+rm -rf $WRF_BUILD/WRF/chem
+rm -rf $WRF_BUILD/WRF/hydro
+rm -rf $WRF_BUILD/WRF/var
+rm -rf $WRF_BUILD/WRF/wrftladj
+
+echo
+cd $WRF_BUILD/WRF
+echo "Contents of WRF: "
+echo 
+ls -l $WRF_BUILD/WRF/*/*
+echo
+
+# Now clean WPS
+cd $WRF_BUILD/WPS
+
+rm -f README clean compile configure configure.wps 
+rm -f namelist.wps.global namelist.wps.nmm namelist.wps.all_options \
+      namelist.wps.fire 
+rm -rf arch
+
+cd $WRF_BUILD/WPS/util
+rm -f *.F *.f90 *.o *.mod *.a *.c Makefile
+cd $WRF_BUILD/WPS/util/src
+rm -f *.F *.f90 *.o *.mod *.a *.c Makefile
+
+cd $WRF_BUILD/WPS/geogrid
+rm -f Makefile
+rm -rf util
+
+cd $WRF_BUILD/WPS/geogrid/src
+rm -f *.F *.f90 *.o *.mod *.a *.c Makefile
+
+cd $WRF_BUILD/WPS/ungrib
+rm -f Makefile  README_LIBS
+
+cd $WRF_BUILD/WPS/ungrib/src
+rm -f *.F *.f90 *.o *.mod *.a *.c Makefile
+rm -rf ngl
+
+cd $WRF_BUILD/WPS/metgrid
+rm -f Makefile
+
+cd $WRF_BUILD/WPS/metgrid/src
+rm -f *.F *.f90 *.o *.mod *.a *.c Makefile
+
+cd $WRF_BUILD/WPS
+echo "Contents of WPS: "
+echo
+ls -l $WRF_BUILD/WPS/*/*
+echo
