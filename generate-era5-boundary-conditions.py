@@ -158,7 +158,7 @@ def run(start_date, end_date, freq_want, save_location, geo_file):
     ## load in a SINGLE time zarr file that is independent of the time loop below. This will allow us to calculate the 
     ## boundaries of the 
     fs = s3fs.S3FileSystem(anon=True) ### This is needed to be able to access wihtouth erroring
-    fmap = s3fs.S3Map(f's3://era5-pds/zarr/2010/07/data/{data_varaibles[0]}.zarr', s3=fs) ## path to era5 data
+    fmap = s3fs.S3Map(f's3://era5-pds/zarr/2010/07/data/{data_variables[0]}.zarr', s3=fs) ## path to era5 data
     dset_t = xr.open_zarr(fmap, consolidated=True) #grab a single zarr file 
     
     
@@ -177,7 +177,7 @@ def run(start_date, end_date, freq_want, save_location, geo_file):
     regridder_era5_to_geogrid_conserve = get_regridder(data_array_era5,ds_out,"conservative")
 
     ## works up to here!
-    dates_to_loop = pd.date_range(start=start_date_want,end=end_date_want, freq=freq_want)
+    dates_to_loop = pd.date_range(start=start_date,end=end_date, freq=freq_want)
     date_year = str(dates_to_loop[0].year)
     date_month = str(dates_to_loop[0].month).zfill(2)
 
@@ -323,14 +323,14 @@ def run(start_date, end_date, freq_want, save_location, geo_file):
 
         data_set_save = xr.Dataset(
             {
-                name_variables[0]:variables_to_save[name_variables[0]].isel(Time=index_not_LW),
-                name_variables[1]:variables_to_save[name_variables[1]].isel(Time=index_not_LW),
-                name_variables[2]:variables_to_save[name_variables[2]].isel(Time=index_not_LW),
-                name_variables[3]:variables_to_save[name_variables[3]].isel(Time=index_not_LW),
-                name_variables[4]:variables_to_save[name_variables[4]].isel(Time=index_not_LW),
-                name_variables[5]:variables_to_save[name_variables[5]].isel(Time=index_not_LW),
-                name_variables[6]:variables_to_save[name_variables[6]].isel(Time=index_not_LW),
-                name_variables[7]:variables_to_save[name_variables[7]].isel(Time=index_LW),
+                name_variables[0]:variables_to_save[name_variables[0]].isel(Time=[index_not_LW]),
+                name_variables[1]:variables_to_save[name_variables[1]].isel(Time=[index_not_LW]),
+                name_variables[2]:variables_to_save[name_variables[2]].isel(Time=[index_not_LW]),
+                name_variables[3]:variables_to_save[name_variables[3]].isel(Time=[index_not_LW]),
+                name_variables[4]:variables_to_save[name_variables[4]].isel(Time=[index_not_LW]),
+                name_variables[5]:variables_to_save[name_variables[5]].isel(Time=[index_not_LW]),
+                name_variables[6]:variables_to_save[name_variables[6]].isel(Time=[index_not_LW]),
+                name_variables[7]:variables_to_save[name_variables[7]].isel(Time=[index_LW]),
             },
             attrs = {'TITLE':'Output from Python Re-grid',
                      'WEST-EAST_GRID_DIMENSION':geogrid.attrs['WEST-EAST_GRID_DIMENSION'],
@@ -361,7 +361,7 @@ def run(start_date, end_date, freq_want, save_location, geo_file):
            os.system(f'aws s3 cp {file_name} {output_path}')
 
         else:
-            data_set_save.to_netcdf(save_location+output_file_name)
+            data_set_save.to_netcdf(f'{save_location}{output_file_name}')
 ## end of run block
 
 

@@ -163,17 +163,17 @@ def get_initial_LAI(geogrid,date_start,name):
     generates a time series of LAI based on the day of year of our start date,
     LAI is linearly interpolated, as it is done in HRLDAS main driver
     """
-    date = pd.to_datetime('2010040100',format='%Y%m%d%H')
+    date = pd.to_datetime(date_start,format='%Y%m%d%H')
 
     LAI = geogrid[name].values 
-    LAI = np.append(l,l[:,0,:,:].reshape(1,1,l.shape[2],l.shape[3]),axis=1)
+    LAI = np.append(LAI,LAI[:,0,:,:].reshape(1,1,LAI.shape[2],LAI.shape[3]),axis=1)
 
     months_index = pd.date_range(
                 "1999-01-01",
                 periods=13,
                 freq=pd.DateOffset(months=1),
             )
-    LAI_xr= xr.DataArray(data=l,dims={'Time':l.shape[0],'Months':months_index,'north_south':114,'east_west':99},coords={'Months':months_index})
+    LAI_xr= xr.DataArray(data=LAI,dims={'Time':LAI.shape[0],'Months':months_index,'north_south':LAI.shape[2],'east_west':LAI.shape[3]},coords={'Months':months_index})
     LAI_xr_daily = LAI_xr.resample(Months='1D').interpolate("linear")
 
     final_return = LAI_xr_daily.isel(Months=date.dayofyear)
@@ -311,6 +311,7 @@ def run(start_date,save_location,geo_file):
     data_set_to_save[HRLDAS_name_variables[7]] = geogrid[data_variables[7]] #mapping coefficientsy
     data_set_to_save[HRLDAS_name_variables[8]] = geogrid[data_variables[8]].max(axis=1) #Maximum Green Fraction
     data_set_to_save[HRLDAS_name_variables[9]] = geogrid[data_variables[9]].min(axis=1) #Minimum Green Fraction
+ 
     
     #LAI needs to be interpolated to the day of year
     var_LAI = get_initial_LAI(geogrid,start_date,data_variables[10])
@@ -329,6 +330,7 @@ def run(start_date,save_location,geo_file):
     data_set_to_save[HRLDAS_name_variables[14]] = data_set_to_save[HRLDAS_name_variables[14]].swap_dims({'y':'south_north','x':'west_east'})
     data_set_to_save[HRLDAS_name_variables[14]].attrs = {'units':units[HRLDAS_name_variables[14]]}
     data_set_to_save[HRLDAS_name_variables[14]] = data_set_to_save[HRLDAS_name_variables[14]].expand_dims('Time')
+
     
     
     ## canwat (needs to be mm so multiply by 1000)
@@ -361,6 +363,8 @@ def run(start_date,save_location,geo_file):
     data_set_to_save[HRLDAS_name_variables[19]] = data_set_to_save[HRLDAS_name_variables[19]].reset_coords(drop=True)
     data_set_to_save[HRLDAS_name_variables[19]] = data_set_to_save[HRLDAS_name_variables[19]].swap_dims({'time':'Time','y':'south_north','x':'west_east'})
     data_set_to_save[HRLDAS_name_variables[19]].attrs = {'units':units[HRLDAS_name_variables[19]]}
+    data_set_to_save[HRLDAS_name_variables[19]] = data_set_to_save[HRLDAS_name_variables[19]].transpose("Time","soil_layers_stag","south_north","west_east")
+    
     
      ##  soil moisture 
     soil_mois_era5 = soil_coarse_stack(data_era5_INIT,data_variables[20])
@@ -369,6 +373,7 @@ def run(start_date,save_location,geo_file):
     data_set_to_save[HRLDAS_name_variables[20]] = data_set_to_save[HRLDAS_name_variables[20]].reset_coords(drop=True)
     data_set_to_save[HRLDAS_name_variables[20]] = data_set_to_save[HRLDAS_name_variables[20]].swap_dims({'time':'Time','y':'south_north','x':'west_east'})
     data_set_to_save[HRLDAS_name_variables[20]].attrs = {'units':units[HRLDAS_name_variables[20]]}
+    data_set_to_save[HRLDAS_name_variables[20]] = data_set_to_save[HRLDAS_name_variables[20]].transpose("Time","soil_layers_stag","south_north","west_east")
     
     
     
@@ -383,9 +388,13 @@ def run(start_date,save_location,geo_file):
                      'LO1':geogrid.attrs['corner_lons'][0],
                      'STAND_LON':geogrid.attrs['STAND_LON'],
                      'MAP_PROJ':geogrid.attrs['MAP_PROJ'],
+                     'GRID_ID':geogrid.attrs['grid_id'],
+                     'ISWATER':geogrid.attrs['ISWATER'],
+                     'ISURBAN':geogrid.attrs['ISURBAN'],
+                     'ISICE':geogrid.attrs['ISICE'],
                      'MMINLU':geogrid.attrs['MMINLU'],
                     }
-    print(data_set_to_save)
+
     data_set_final = xr.Dataset(data_vars=data_set_to_save,attrs=attrs)
     
     if save_location.startswith('s3://'):
@@ -400,7 +409,7 @@ def run(start_date,save_location,geo_file):
            os.system(f'aws s3 cp {file_name} {output_path}')
 
     else:
-        data_set_final.to_netcdf(save_location+output_filename)
+        data_set_final.to_netcdf(f'{save_location}{output_filename}')
 ## end of run block
 ## basic argument parser given Luke M. 
 if __name__ == '__main__':
