@@ -24,11 +24,11 @@ RUN apt-get update && \
 RUN curl -SL https://ral.ucar.edu/sites/default/files/public/projects/ncar-docker-wrf/ucar-bsd-3-clause-license.pdf > /UCAR-BSD-3-Clause-License.pdf
 # Setup input/output directories for WRF as well as directories for input model data
 RUN mkdir /home/jupiter && mkdir /home/jupiter/model && mkdir ${ROOT_PATH} && \
-mkdir ${ROOT_PATH}/static_data && mkdir ${ROOT_PATH}/wpsdata && \
-mkdir ${ROOT_PATH}/wpsdata/geogrid && mkdir ${ROOT_PATH}/wpsdata/intermediate && \
-mkdir ${ROOT_PATH}/wpsdata/metgrid && mkdir ${ROOT_PATH}/wrfdata && \
-mkdir ${ROOT_PATH}/wrfdata/real && mkdir ${ROOT_PATH}/wrfdata/wrf && \
-mkdir ${ROOT_PATH}/data_sources && mkdir ${ROOT_PATH}/data_sources/ERA5
+    mkdir ${ROOT_PATH}/static_data && mkdir ${ROOT_PATH}/wpsdata && \
+    mkdir ${ROOT_PATH}/wpsdata/geogrid && mkdir ${ROOT_PATH}/wpsdata/intermediate && \
+    mkdir ${ROOT_PATH}/wpsdata/metgrid && mkdir ${ROOT_PATH}/wrfdata && \
+    mkdir ${ROOT_PATH}/wrfdata/real && mkdir ${ROOT_PATH}/wrfdata/wrf && \
+    mkdir ${ROOT_PATH}/data_sources && mkdir ${ROOT_PATH}/data_sources/ERA5
 
 #  Copy container files
 #COPY configs ${APP_PATH}/configs
