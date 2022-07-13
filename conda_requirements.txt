@@ -25,3 +25,4 @@ pyyaml
 cdsapi
 cryptography
 binutils
+s3fs

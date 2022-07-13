@@ -51,16 +51,16 @@ COPY condarc /root/.condarc
 
 # Install conda libraries and remove unnecessary files
 RUN conda update -n base -c defaults conda && \
- conda install -y -c conda-forge --file ${APP_PATH}/conda_requirements.txt && \ 
- conda clean --all -yq && \
- find ${CONDA_DIR} -type f -name '*.pyc' -exec rm -f {} \; && \
- find ${CONDA_DIR} -type f -name '*.js.map*' -exec strip --strip-all {} \; && \
- rm -rf ${CONDA_DIR}/pkgs && \
- rm -rf ${CONDA_DIR}/lib/*_mc.so && \
- rm -rf ${CONDA_DIR}/lib/*_mc2.so && \
- rm -rf ${CONDA_DIR}/lib/*_mc3.so && \
- rm -rf ${CONDA_DIR}/lib/*_avx512* && \
- rm -rf ${CONDA_DIR}/lib/*_avx.* 
+    conda install -y -c conda-forge --file ${APP_PATH}/conda_requirements.txt && \ 
+    conda clean --all -yq && \
+    find ${CONDA_DIR} -type f -name '*.pyc' -exec rm -f {} \; && \
+    find ${CONDA_DIR} -type f -name '*.js.map*' -exec strip --strip-all {} \; && \
+    rm -rf ${CONDA_DIR}/pkgs && \
+    rm -rf ${CONDA_DIR}/lib/*_mc.so && \
+    rm -rf ${CONDA_DIR}/lib/*_mc2.so && \
+    rm -rf ${CONDA_DIR}/lib/*_mc3.so && \
+    rm -rf ${CONDA_DIR}/lib/*_avx512* && \
+    rm -rf ${CONDA_DIR}/lib/*_avx.* 
 
 # Install pip libraries
 #RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
@@ -70,10 +70,10 @@ RUN conda update -n base -c defaults conda && \
 
 # Retrieve WRF and WPS from github
 RUN curl -SL https://github.com/wrf-model/WRF/archive/refs/tags/v${WRF_VERSION}.tar.gz | tar zxC ${ROOT_PATH} \
-&& mv ${ROOT_PATH}/WRF-${WRF_VERSION} ${ROOT_PATH}/WRF \
-&& curl -SL https://github.com/wrf-model/WPS/archive/refs/tags/v${WPS_VERSION}.tar.gz | tar zxC ${ROOT_PATH} \
-&& mv ${ROOT_PATH}/WPS-${WPS_VERSION} ${ROOT_PATH}/WPS \
-&& curl -SL https://ral.ucar.edu/sites/default/files/public/projects/ncar-docker-wrf/ucar-bsd-3-clause-license.pdf > /UCAR-BSD-3-Clause-License.pdf
+    && mv ${ROOT_PATH}/WRF-${WRF_VERSION} ${ROOT_PATH}/WRF \
+    && curl -SL https://github.com/wrf-model/WPS/archive/refs/tags/v${WPS_VERSION}.tar.gz | tar zxC ${ROOT_PATH} \
+    && mv ${ROOT_PATH}/WPS-${WPS_VERSION} ${ROOT_PATH}/WPS \
+    && curl -SL https://ral.ucar.edu/sites/default/files/public/projects/ncar-docker-wrf/ucar-bsd-3-clause-license.pdf > /UCAR-BSD-3-Clause-License.pdf
 
 # Start second stage of build
 #FROM registry.gitlab.com/jupiterintel/baseimages/ubuntu-minimal:0.1.0 AS refactor_batch
@@ -81,13 +81,13 @@ FROM ubuntu:18.04 AS refactor_batch
 
 # Install relevant libraries (added scp Aaron A.)
 RUN apt-get update && apt-get install -y --no-install-recommends unzip csh make m4 file && \
-apt-get autoclean -y && \
-apt-get autoremove -y && \
-apt-get clean -y && \
-rm -rf /var/lib/apt/lists/* && \
-rm -rf /var/cache/apt/archives/* && \
-rm -rf /var/tmp/* && \
-rm -rf /tmp/*
+    apt-get autoclean -y && \
+    apt-get autoremove -y && \
+    apt-get clean -y && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /var/cache/apt/archives/* && \
+    rm -rf /var/tmp/* && \
+    rm -rf /tmp/*
 
 # Respecify args
 ARG ROOT_PATH=/home/jupiter/model/wrf
@@ -156,6 +156,8 @@ RUN git clone https://github.com/GAaronAlexander/NOAH-MP_HUE.git ${NOAHMP}\
     && ln -s user_build_options.gfortran.cloud.parallel user_build_options \ 
     && make clean \
     && make 
+
+COPY *.py ${NOAHMP}
 
 # Start bash
 CMD ["/bin/bash"]
