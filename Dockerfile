@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.0.2-experimental
 # Start first stage of build
 #FROM registry.gitlab.com/jupiterintel/baseimages/ubuntu-minimal:0.1.0 AS base
-FROM ubuntu-minimal AS base 
+FROM ubuntu-minimal
 
 # From here on, this is now Callies docker file!
 
@@ -77,7 +77,7 @@ RUN curl -SL https://github.com/wrf-model/WRF/archive/refs/tags/v${WRF_VERSION}.
 
 # Start second stage of build
 #FROM registry.gitlab.com/jupiterintel/baseimages/ubuntu-minimal:0.1.0 AS refactor_batch
-FROM ubuntu:18.04 AS refactor_batch
+##FROM ubuntu:18.04 AS refactor_batch
 
 # Install relevant libraries (added scp Aaron A.)
 RUN apt-get update && apt-get install -y --no-install-recommends unzip csh make m4 file && \
@@ -98,8 +98,8 @@ ENV PATH=/miniconda/bin:$PATH
 COPY condarc /root/.condarc
 
 # Copy files from base
-COPY --from=base /miniconda /miniconda
-COPY --from=base /home/jupiter /home/jupiter
+#COPY --from=base /miniconda /miniconda
+#COPY --from=base /home/jupiter /home/jupiter
 
 # On to compiling WRF
 WORKDIR ${ROOT_PATH}
