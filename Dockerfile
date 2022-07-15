@@ -36,7 +36,11 @@ RUN mkdir /home/jupiter && mkdir /home/jupiter/model && mkdir ${ROOT_PATH} && \
 #COPY main ${APP_PATH}/main
 #COPY tests ${APP_PATH}/tests
 #COPY utilities ${APP_PATH}/utilities
-COPY * ${APP_PATH}/
+#COPY * ${APP_PATH}/
+COPY conda_requirements.txt ${APP_PATH}/conda_requirements.txt
+COPY docker-clean ${APP_PATH}/docker-clean
+
+
 
 # Retrieve miniconda from URL
 RUN curl -o ~/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh && \
@@ -157,7 +161,7 @@ RUN git clone https://github.com/GAaronAlexander/NOAH-MP_HUE.git ${NOAHMP}\
     && make clean \
     && make 
 
-COPY *.py ${NOAHMP}
+COPY *.py ${NOAHMP}/
 
 # Start bash
 CMD ["/bin/bash"]
