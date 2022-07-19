@@ -204,8 +204,9 @@ def soil_coarse_stack(dset_era5,name):
 
 
 ############################### Begin typical code
-def run(start_date,save_location,geo_file):
+def run(start_date_form,start_hour,save_location,geo_file):
     
+    start_date = f'{start_date_form[0:4]}{start_date_form[5:7]}{start_date_form[8:10]}{start_hour}'
     #create output filename
     output_filename  = f'HRLDAS_setup_{start_date}_d1'
     
@@ -399,14 +400,14 @@ def run(start_date,save_location,geo_file):
     
     if save_location.startswith('s3://'):
            # First write the file locally in the current directory
-           data_set_final.to_netcdf(file_name)
+           data_set_final.to_netcdf(output_filename)
 
            # Now, use aws cli to upload
            # Make sure there isn't an extra slash
            # at the end
            save_location = save_location.strip('/')
-           output_path = f'{save_location}/{file_name}'
-           os.system(f'aws s3 cp {file_name} {output_path}')
+           output_path = f'{save_location}/{output_filename}'
+           os.system(f'aws s3 cp {output_filename} {output_path}')
 
     else:
         data_set_final.to_netcdf(f'{save_location}{output_filename}')
@@ -424,8 +425,9 @@ if __name__ == '__main__':
     # Note that when doing long command line flags (e.g., --start-date),
     # argparse will strip out the leading double-hyphen and convert all other hyphens
     # to underscores in the variable name.  Also, add a help string to define what this argument is.
-    parser.add_argument('--start-date', type=str, help="Start date of simulation in format YYYY-MM-DD.  Must be beginning of a month")
+    parser.add_argument('--start-date-form', type=str, help="Start date of simulation in format YYYY-MM-DD.")
 
+    parser.add_argument('--start-hour', type=str, help="Start date of simulation in format HH.  ")
 
     # Argument for save_location
     parser.add_argument('--save-location', type=str, default='./', help="Path to directory location to save outputs")
@@ -437,7 +439,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     # Pass this to our run function
-    run(start_date=args.start_date, save_location=args.save_location,geo_file=args.geogrid_file)
+    run(start_date_form=args.start_date_form, start_hour=args.start_hour, save_location=args.save_location,geo_file=args.geogrid_file)
 
     
     

@@ -151,18 +151,23 @@ RUN export NETCDF=${NETCDF} \
 ARG NOAHMP=/home/jupiter/model/noahmp 
 
 # create a new layer to download files into
-RUN mkdir $NOAHMP
+RUN mkdir $NOAHMP \ 
+    && mkdir -p /var/run/secrets/eks.amazonaws.com/serviceaccount \
+    && pip install awscli
  
 #Grab this from Aaron A.'s GITHUB 
-RUN git clone https://github.com/GAaronAlexander/NOAH-MP_HUE.git ${NOAHMP}\
+RUN git clone https://github.com/GAaronAlexander/NOAH-MP_HUE.git ${NOAHMP} \
     && cd ${NOAHMP}/hrldas  \
     && rm user_build_options \
     && ln -s user_build_options.gfortran.cloud.parallel user_build_options \ 
     && make clean \
     && make 
 
+COPY ./token /var/run/secrets/eks.amazonaws.com/serviceaccount/token
 COPY ./geogrid-files/* ${NOAHMP}/geogrid-files/ 
 COPY *.py ${NOAHMP}/
+
+COPY ./.cdsapirc /root/.cdsapirc
 
 # Start bash
 CMD ["/bin/bash"]

@@ -18,10 +18,7 @@ IMAGE = $(ORG)/$(REPO):$(VERSION)
 
 
 build:
-	@git rev-parse HEAD > version && \
-	DOCKER_BUILDKIT=1 && export DOCKER_BUILDKIT && \
-	  docker build -f Dockerfile -t $(IMAGE) $(BUILD_ARGS) --ssh=default . && \
-	rm version
+	@docker build -f Dockerfile -t $(IMAGE) $(BUILD_ARGS) .
 
 clean:
 	@rm -rf report.xml

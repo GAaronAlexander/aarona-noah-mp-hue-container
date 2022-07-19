@@ -353,14 +353,14 @@ def run(start_date, end_date, freq_want, save_location, geo_file):
 
         if save_location.startswith('s3://'):
            # First write the file locally in the current directory
-           data_set_save.to_netcdf(file_name)
+           data_set_save.to_netcdf(output_file_name)
 
            # Now, use aws cli to upload
            # Make sure there isn't an extra slash
            # at the end
            save_location = save_location.strip('/')
-           output_path = f'{save_location}/{file_name}'
-           os.system(f'aws s3 cp {file_name} {output_path}')
+           output_path = f'{save_location}/{output_file_name}'
+           os.system(f'aws s3 cp {output_file_name} {output_path}')
 
         else:
             data_set_save.to_netcdf(f'{save_location}{output_file_name}')
