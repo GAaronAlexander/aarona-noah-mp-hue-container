@@ -66,7 +66,7 @@ def get_region_era5(era5,geo):
     
     return(input_lonstart,input_lonend,input_latend,input_latstart) # order due to the way era5 defines coordinates
 
-def transform_era5_to_dataarray_2d(dsubset):
+def transform_era5_to_dataarray_2d(dsubset,name):
     
     """
     takes a zarr dataarray, and creates a dataset that has the correct lats and lons to 
@@ -78,7 +78,7 @@ def transform_era5_to_dataarray_2d(dsubset):
 
     data_array_input = xr.Dataset(
         {
-        name_variables[0]:(["y","x"],dsubset[0,1:-1,1:-1].values),
+        name:(["y","x"],dsubset[0,1:-1,1:-1].values),
         }
         ,coords={
             "lat": (["y","x"],latsv[1:-1,1:-1]),
@@ -143,6 +143,8 @@ def run(start_date, end_date, freq_want, save_location, geo_file):
     
     variable_name_longwave = 'surface_thermal_radiation_downwards' ## this needs to be used to access the ERA5 data that was pre-downloaded
 
+    # fs = s3fs.S3FileSystem() ### This is needed to be able to access wihtouth erroring
+    # fmap = fs.open(geo_file, mode='rb') ## path to era5 data
     geogrid = xr.open_dataset(geo_file) # load in geofile
 
     ##grab the geogrid file to create the regridder (only once)
@@ -169,8 +171,8 @@ def run(start_date, end_date, freq_want, save_location, geo_file):
 
     # Example on how to use the output
     # of era5 region dset_subset_td = dset_td[data_varaibles[2]][:,subset_lat_start:subset_lat_end,subset_lon_start:subset_lon_end]
-    _temp =  dset_t[data_varaibles[0]][:,subset_lat_start:subset_lat_end,subset_lon_start:subset_lon_end]
-    data_array_era5 = transform_era5_to_dataarray_2d(_temp)
+    _temp =  dset_t[data_variables[0]][:,subset_lat_start:subset_lat_end,subset_lon_start:subset_lon_end]
+    data_array_era5 = transform_era5_to_dataarray_2d(_temp,name_variables[0])
 
     ## now we get the regridder weights (only need this once)
     regridder_era5_to_geogrid = get_regridder(data_array_era5,ds_out)

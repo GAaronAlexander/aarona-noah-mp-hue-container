@@ -151,8 +151,8 @@ RUN export NETCDF=${NETCDF} \
 ARG NOAHMP=/home/jupiter/model/noahmp 
 
 # create a new layer to download files into
-RUN mkdir $NOAHMP 
-
+RUN mkdir $NOAHMP
+ 
 #Grab this from Aaron A.'s GITHUB 
 RUN git clone https://github.com/GAaronAlexander/NOAH-MP_HUE.git ${NOAHMP}\
     && cd ${NOAHMP}/hrldas  \
@@ -161,6 +161,7 @@ RUN git clone https://github.com/GAaronAlexander/NOAH-MP_HUE.git ${NOAHMP}\
     && make clean \
     && make 
 
+COPY ./geogrid-files/* ${NOAHMP}/geogrid-files/ 
 COPY *.py ${NOAHMP}/
 
 # Start bash

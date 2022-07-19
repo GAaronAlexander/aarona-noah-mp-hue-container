@@ -26,3 +26,5 @@ cdsapi
 cryptography
 binutils
 s3fs
+xesmf
+zarr
