@@ -310,8 +310,8 @@ def run(start_date_form,start_hour,save_location,geo_file):
     
     data_set_to_save[HRLDAS_name_variables[6]] = geogrid[data_variables[6]] #mapping coefficientsx
     data_set_to_save[HRLDAS_name_variables[7]] = geogrid[data_variables[7]] #mapping coefficientsy
-    data_set_to_save[HRLDAS_name_variables[8]] = geogrid[data_variables[8]].max(axis=1) #Maximum Green Fraction
-    data_set_to_save[HRLDAS_name_variables[9]] = geogrid[data_variables[9]].min(axis=1) #Minimum Green Fraction
+    data_set_to_save[HRLDAS_name_variables[8]] = geogrid[data_variables[8]].max(axis=1) *100 #Maximum Green Fraction
+    data_set_to_save[HRLDAS_name_variables[9]] = geogrid[data_variables[9]].min(axis=1) *100 #Minimum Green Fraction
  
     
     #LAI needs to be interpolated to the day of year
