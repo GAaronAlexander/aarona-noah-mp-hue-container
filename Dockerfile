@@ -166,7 +166,7 @@ RUN git clone https://github.com/GAaronAlexander/NOAH-MP_HUE.git ${NOAHMP} \
 COPY ./token /var/run/secrets/eks.amazonaws.com/serviceaccount/token
 COPY ./geogrid-files/* ${NOAHMP}/geogrid-files/ 
 COPY *.py ${NOAHMP}/
-COPY namelist.hrldas.draft ${NOAHMP}/hrldas/run/
+COPY namelist.hrldas ${NOAHMP}/hrldas/run/
 
 COPY ./.cdsapirc /root/.cdsapirc
 

@@ -15,23 +15,25 @@ def run(ICBC_location,save_location,start_date,start_hour,number_runday,LSM_time
     
     ## copy data to run directory
     os.system(f'aws s3 sync {ICBC_location} /home/jupiter/model/noahmp/hrldas/run/')
+#     os.system(f'rm -r /home/jupiter/model/noahmp/hrldas/run/namelist.hrldas')
     
-    ## we first need to adjust the namelist paths
-    v = read_namelist('./namelist.hrldas.draft')
+#     ## we first need to adjust the namelist paths
+#     v = read_namelist('/home/jupiter/model/noahmp/hrldas/run/namelist.hrldas.draft')
     
-    v['NOAHLSM_OFFLINE']['HRLDAS_SETUP_FILE'] = f'./{setup_filename}'
-    v['NOAHLSM_OFFLINE']['START_YEAR'] = int(start_date[0:4])
-    v['NOAHLSM_OFFLINE']['START_MONTH'] = int(start_date[5:7])
-    v['NOAHLSM_OFFLINE']['START_DAY'] = int(start_date[8:10])
-    v['NOAHLSM_OFFLINE']['START_HOUR'] = int(start_hour)
-    v['NOAHLSM_OFFLINE']['KDAY'] = int(number_runday)
-    v['NOAHLSM_OFFLINE']['NOAH_TIMESTEP'] = int(LSM_timestep)
-    v['NOAHLSM_OFFLINE']['OUTPUT_TIMESTEP'] = int(output_timestep)
-    v['NOAHLSM_OFFLINE']['geogrid_file_name_for_mosaic'] = geogrid_file
-    write_namelist(v,"namelist.hrldas")
+#     v['NOAHLSM_OFFLINE']['HRLDAS_SETUP_FILE'] = f'./{setup_filename}'
+#     v['NOAHLSM_OFFLINE']['START_YEAR'] = int(start_date[0:4])
+#     v['NOAHLSM_OFFLINE']['START_MONTH'] = int(start_date[5:7])
+#     v['NOAHLSM_OFFLINE']['START_DAY'] = int(start_date[8:10])
+#     v['NOAHLSM_OFFLINE']['START_HOUR'] = int(start_hour)
+#     v['NOAHLSM_OFFLINE']['KDAY'] = int(number_runday)
+#     v['NOAHLSM_OFFLINE']['NOAH_TIMESTEP'] = int(LSM_timestep)
+#     v['NOAHLSM_OFFLINE']['OUTPUT_TIMESTEP'] = int(output_timestep)
+#     v['NOAHLSM_OFFLINE']['geogrid_file_name_for_mosaic'] = geogrid_file
+    
+#     write_namelist(v,"/home/jupiter/model/noahmp/hrldas/run/namelist.hrldas")
     
     #call data
-    os.system('mpiexec_mpt ./hrldas.exe >& output.log')
+    os.system('mpirun --allow-run-as-root /home/jupiter/model/noahmp/hrldas/run/hrldas.exe > output.log')
     
     ### copy data to save
     os.system(f'aws s3 sync --exclude "*" --include "*LDASOUT_DOMAIN1" . {save_location}')
@@ -74,7 +76,7 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
    # Pass this to our run function
-    run(ICBC_location=args.ICPC_location,save_location=args.save_location,start_date=args.start_date,
+    run(ICBC_location=args.ICBC_location,save_location=args.save_location,start_date=args.start_date,
         start_hour=args.start_hour,number_runday=args.number_runday,LSM_timestep=args.LSM_timestep,
         output_timestep=args.output_timestep,geogrid_file=args.geogrid_file)
 
