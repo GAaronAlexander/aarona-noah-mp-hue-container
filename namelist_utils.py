@@ -163,7 +163,7 @@ def write_namelist(nmld, outfname="namelist.input"):
     # Open the output file for writing
     # Set the newline character and a default indentation
     nl = "\n"
-    indent = " "
+    indent = "\t"
     with open(outfname, "w") as outfile:
         print("", file=outfile)
         # Loop through all the sections of the namelist
@@ -178,7 +178,7 @@ def write_namelist(nmld, outfname="namelist.input"):
             # Now loop through all variables and write
             for varname, value in section.items():
                 print(
-                    "".join((indent, varname.ljust(24), "= ", var_format(value), ",")),
+                    "".join((indent, varname.ljust(30), "= ", var_format(value), " ")),
                     file=outfile,
                 )
             # Close the section

@@ -380,7 +380,7 @@ def run(start_date_form,start_hour,save_location,geo_file):
     
     attrs = {'TITLE':'Output from Python Re-grid',
                      'WEST-EAST_GRID_DIMENSION':geogrid.attrs['WEST-EAST_GRID_DIMENSION'],
-                     'SOUTH-NORHT_GRID_DIMENSION':geogrid.attrs['SOUTH-NORTH_GRID_DIMENSION'],
+                     'SOUTH-NORTH_GRID_DIMENSION':geogrid.attrs['SOUTH-NORTH_GRID_DIMENSION'],
                      'DX':geogrid.attrs['DX'],
                      'DY':geogrid.attrs['DY'],
                      'TRUELAT1':geogrid.attrs['TRUELAT1'],
@@ -394,7 +394,7 @@ def run(start_date_form,start_hour,save_location,geo_file):
                      'ISURBAN':geogrid.attrs['ISURBAN'],
                      'ISICE':geogrid.attrs['ISICE'],
                      'MMINLU':geogrid.attrs['MMINLU'],
-                    }
+            }
 
     data_set_final = xr.Dataset(data_vars=data_set_to_save,attrs=attrs)
     

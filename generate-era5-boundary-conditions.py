@@ -336,7 +336,7 @@ def run(start_date, end_date, freq_want, save_location, geo_file):
             },
             attrs = {'TITLE':'Output from Python Re-grid',
                      'WEST-EAST_GRID_DIMENSION':geogrid.attrs['WEST-EAST_GRID_DIMENSION'],
-                     'SOUTH-NORHT_GRID_DIMENSION':geogrid.attrs['SOUTH-NORTH_GRID_DIMENSION'],
+                     'SOUTH-NORTH_GRID_DIMENSION':geogrid.attrs['SOUTH-NORTH_GRID_DIMENSION'],
                      'DX':geogrid.attrs['DX'],
                      'DY':geogrid.attrs['DY'],
                      'TRUELAT1':geogrid.attrs['TRUELAT1'],
@@ -345,8 +345,12 @@ def run(start_date, end_date, freq_want, save_location, geo_file):
                      'LO1':geogrid.attrs['corner_lons'][0],
                      'STAND_LON':geogrid.attrs['STAND_LON'],
                      'MAP_PROJ':geogrid.attrs['MAP_PROJ'],
+                     'GRID_ID':geogrid.attrs['grid_id'],
+                     'ISWATER':geogrid.attrs['ISWATER'],
+                     'ISURBAN':geogrid.attrs['ISURBAN'],
+                     'ISICE':geogrid.attrs['ISICE'],
                      'MMINLU':geogrid.attrs['MMINLU'],
-                    }
+            }
 
 
         )

@@ -8,6 +8,8 @@ def run(ICBC_location,save_location,start_date,start_hour,number_runday,LSM_time
     # assumes that you have already set up the namelist physics options in the namelist.hrldas.draft file
     # can be easily added as a keyword if you need to submit a suite of differetn run options. 
     """
+    
+    os.chdir('/home/jupiter/model/noahmp/hrldas/run/')
     start_date = f'{start_date[0:4]}{start_date[5:7]}{start_date[8:10]}{start_hour}'
     
     #create output filename
@@ -33,7 +35,7 @@ def run(ICBC_location,save_location,start_date,start_hour,number_runday,LSM_time
 #     write_namelist(v,"/home/jupiter/model/noahmp/hrldas/run/namelist.hrldas")
     
     #call data
-    os.system('mpirun --allow-run-as-root /home/jupiter/model/noahmp/hrldas/run/hrldas.exe > output.log')
+    os.system('mpirun --allow-run-as-root ./hrldas.exe')
     
     ### copy data to save
     os.system(f'aws s3 sync --exclude "*" --include "*LDASOUT_DOMAIN1" . {save_location}')
