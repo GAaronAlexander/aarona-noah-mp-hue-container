@@ -1,10 +1,10 @@
 &NOAHLSM_OFFLINE
 
- HRLDAS_SETUP_FILE = "/glade/scratch/galexand/STREAM-LSM/era5-boundary-conditions/HRLDAS_setup_2016060100_d1"
- INDIR = "./"
- OUTDIR = "./"
+ HRLDAS_SETUP_FILE = "./HRLDAS_setup_2010060100_d1"
+ INDIR = "/home/jupiter/model/noahmp/hrldas/run/"
+ OUTDIR = "/home/jupiter/model/noahmp/hrldas/run/"
 
- START_YEAR  = 2016
+ START_YEAR  = 2010
  START_MONTH = 06
  START_DAY   = 01
  START_HOUR  = 00
@@ -47,7 +47,7 @@
  RESTART_FREQUENCY_HOURS = 720
 
 !Noah-MP HUE extras
- geogrid_file_name_for_mosaic = "/glade/work/galexand/STREAM-LSM/geogrid/geogrid_out/geo_em.d01.nc"
+ geogrid_file_name_for_mosaic = "/home/jupiter/model/noahmp/geogrid-files/geo_em.d01.milwaukee.nc"
  number_mosaic_catagories = 4
  number_land_use_catagories = 40
 
