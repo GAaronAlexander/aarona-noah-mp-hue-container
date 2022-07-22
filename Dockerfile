@@ -155,8 +155,9 @@ RUN mkdir $NOAHMP \
     && mkdir -p /var/run/secrets/eks.amazonaws.com/serviceaccount \
     && pip install awscli
  
-#Grab this from Aaron A.'s GITHUB 
-RUN git clone https://github.com/GAaronAlexander/NOAH-MP_HUE.git ${NOAHMP} \
+#Grab this from Aaron A.'s GITHUB \
+
+RUN git clone -b latest-1 https://github.com/GAaronAlexander/NOAH-MP_HUE.git ${NOAHMP} \
     && cd ${NOAHMP}/hrldas  \
     && rm user_build_options \
     && ln -s user_build_options.gfortran.cloud.parallel user_build_options \ 
