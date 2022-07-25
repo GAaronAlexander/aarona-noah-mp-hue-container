@@ -2,7 +2,7 @@ import os
 from namelist_utils import read_namelist, write_namelist
 
 
-def run(ICBC_location,save_location,start_date,start_hour,number_runday,LSM_timestep,output_timestep,geogrid_file):
+def run(num_cpus, ICBC_location, save_location, start_date, start_hour, number_runday, LSM_timestep, output_timestep, geogrid_file):
     
     """
     # assumes that you have already set up the namelist physics options in the namelist.hrldas.draft file
@@ -35,7 +35,7 @@ def run(ICBC_location,save_location,start_date,start_hour,number_runday,LSM_time
     write_namelist(v,"/home/jupiter/model/noahmp/hrldas/run/namelist.hrldas")
     
     #call data
-    os.system('mpirun --allow-run-as-root ./hrldas.exe')
+    os.system(f'mpirun --allow-run-as-root -n {num_cpus} ./hrldas.exe')
     
     ### copy data to save
     os.system(f'aws s3 sync --exclude "*" --include "*LDASOUT_DOMAIN1" . {save_location}')
@@ -53,6 +53,8 @@ if __name__ == '__main__':
     # Note that when doing long command line flags (e.g., --start-date),
     # argparse will strip out the leading double-hyphen and convert all other hyphens
     # to underscores in the variable name.  Also, add a help string to define what this argument is.
+    parser.add_argument('--num-cpus', type=str, default='6', help="Number of CPUS to run ")
+    
     parser.add_argument('--ICBC-location', type=str, help="Path to s3 bucket where ICBC was created")
 
     # Argument for end date
@@ -78,7 +80,7 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
    # Pass this to our run function
-    run(ICBC_location=args.ICBC_location,save_location=args.save_location,start_date=args.start_date,
+    run(num_cpus=args.num_cpus ,ICBC_location=args.ICBC_location,save_location=args.save_location,start_date=args.start_date,
         start_hour=args.start_hour,number_runday=args.number_runday,LSM_timestep=args.LSM_timestep,
         output_timestep=args.output_timestep,geogrid_file=args.geogrid_file)
 

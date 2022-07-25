@@ -157,7 +157,7 @@ RUN mkdir $NOAHMP \
  
 #Grab this from Aaron A.'s GITHUB \
 
-RUN git clone -b latest-1 https://github.com/GAaronAlexander/NOAH-MP_HUE.git ${NOAHMP} \
+RUN git clone https://github.com/GAaronAlexander/NOAH-MP_HUE.git ${NOAHMP} \
     && cd ${NOAHMP}/hrldas  \
     && rm user_build_options \
     && ln -s user_build_options.gfortran.cloud.parallel user_build_options \ 
@@ -167,9 +167,14 @@ RUN git clone -b latest-1 https://github.com/GAaronAlexander/NOAH-MP_HUE.git ${N
 COPY ./token /var/run/secrets/eks.amazonaws.com/serviceaccount/token
 COPY ./geogrid-files/* ${NOAHMP}/geogrid-files/ 
 COPY *.py ${NOAHMP}/
+
+#you need to make sure you replace your 
+#.cdsapric file to have updated permissions
+COPY ./.cdsapirc /root/.cdsapirc
+
+#control your physics options here
 COPY namelist.hrldas.draft ${NOAHMP}/hrldas/run/
 
-COPY ./.cdsapirc /root/.cdsapirc
 
 # Start bash
 CMD ["/bin/bash"]

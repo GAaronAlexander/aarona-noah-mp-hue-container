@@ -250,6 +250,8 @@ def run(start_date, end_date, freq_want, save_location, geo_file):
                     
 
                 else:
+                    if (output_name == 'LWDOWN'):
+                        continue
     
                     ## load in the data (ERA5 SPECIFIC)
                     fs = s3fs.S3FileSystem(anon=True) ### This is needed to be able to access wihtouth erroring
