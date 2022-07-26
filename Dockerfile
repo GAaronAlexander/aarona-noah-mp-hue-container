@@ -156,7 +156,7 @@ RUN mkdir $NOAHMP \
     && pip install awscli
  
 #Grab this from Aaron A.'s GITHUB \
-
+#COPY ./token /var/run/secrets/eks.amazonaws.com/serviceaccount/token
 RUN git clone https://github.com/GAaronAlexander/NOAH-MP_HUE.git ${NOAHMP} \
     && cd ${NOAHMP}/hrldas  \
     && rm user_build_options \

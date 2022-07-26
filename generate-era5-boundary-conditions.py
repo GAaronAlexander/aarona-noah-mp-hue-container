@@ -263,7 +263,7 @@ def run(start_date, end_date, freq_want, save_location, geo_file):
                     if (output_name == 'SWDOWN'):
                         divisor = 3600
                     elif (output_name == 'RAINRATE'):
-                        divisor = 1000/3600 #rainfall is in m 
+                        divisor = 1/3600 #rainfall is in m 
                     else:
                         divisor = 1
 
