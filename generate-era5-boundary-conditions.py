@@ -66,7 +66,7 @@ def get_region_era5(era5,geo):
     
     return(input_lonstart,input_lonend,input_latend,input_latstart) # order due to the way era5 defines coordinates
 
-def transform_era5_to_dataarray_2d(dsubset):
+def transform_era5_to_dataarray_2d(dsubset,name):
     
     """
     takes a zarr dataarray, and creates a dataset that has the correct lats and lons to 
@@ -78,7 +78,7 @@ def transform_era5_to_dataarray_2d(dsubset):
 
     data_array_input = xr.Dataset(
         {
-        name_variables[0]:(["y","x"],dsubset[0,1:-1,1:-1].values),
+        name:(["y","x"],dsubset[0,1:-1,1:-1].values),
         }
         ,coords={
             "lat": (["y","x"],latsv[1:-1,1:-1]),
@@ -143,6 +143,8 @@ def run(start_date, end_date, freq_want, save_location, geo_file):
     
     variable_name_longwave = 'surface_thermal_radiation_downwards' ## this needs to be used to access the ERA5 data that was pre-downloaded
 
+    # fs = s3fs.S3FileSystem() ### This is needed to be able to access wihtouth erroring
+    # fmap = fs.open(geo_file, mode='rb') ## path to era5 data
     geogrid = xr.open_dataset(geo_file) # load in geofile
 
     ##grab the geogrid file to create the regridder (only once)
@@ -158,7 +160,7 @@ def run(start_date, end_date, freq_want, save_location, geo_file):
     ## load in a SINGLE time zarr file that is independent of the time loop below. This will allow us to calculate the 
     ## boundaries of the 
     fs = s3fs.S3FileSystem(anon=True) ### This is needed to be able to access wihtouth erroring
-    fmap = s3fs.S3Map(f's3://era5-pds/zarr/2010/07/data/{data_varaibles[0]}.zarr', s3=fs) ## path to era5 data
+    fmap = s3fs.S3Map(f's3://era5-pds/zarr/2010/07/data/{data_variables[0]}.zarr', s3=fs) ## path to era5 data
     dset_t = xr.open_zarr(fmap, consolidated=True) #grab a single zarr file 
     
     
@@ -169,15 +171,15 @@ def run(start_date, end_date, freq_want, save_location, geo_file):
 
     # Example on how to use the output
     # of era5 region dset_subset_td = dset_td[data_varaibles[2]][:,subset_lat_start:subset_lat_end,subset_lon_start:subset_lon_end]
-    _temp =  dset_t[data_varaibles[0]][:,subset_lat_start:subset_lat_end,subset_lon_start:subset_lon_end]
-    data_array_era5 = transform_era5_to_dataarray_2d(_temp)
+    _temp =  dset_t[data_variables[0]][:,subset_lat_start:subset_lat_end,subset_lon_start:subset_lon_end]
+    data_array_era5 = transform_era5_to_dataarray_2d(_temp,name_variables[0])
 
     ## now we get the regridder weights (only need this once)
     regridder_era5_to_geogrid = get_regridder(data_array_era5,ds_out)
     regridder_era5_to_geogrid_conserve = get_regridder(data_array_era5,ds_out,"conservative")
 
     ## works up to here!
-    dates_to_loop = pd.date_range(start=start_date_want,end=end_date_want, freq=freq_want)
+    dates_to_loop = pd.date_range(start=start_date,end=end_date, freq=freq_want)
     date_year = str(dates_to_loop[0].year)
     date_month = str(dates_to_loop[0].month).zfill(2)
 
@@ -248,6 +250,8 @@ def run(start_date, end_date, freq_want, save_location, geo_file):
                     
 
                 else:
+                    if (output_name == 'LWDOWN'):
+                        continue
     
                     ## load in the data (ERA5 SPECIFIC)
                     fs = s3fs.S3FileSystem(anon=True) ### This is needed to be able to access wihtouth erroring
@@ -259,7 +263,7 @@ def run(start_date, end_date, freq_want, save_location, geo_file):
                     if (output_name == 'SWDOWN'):
                         divisor = 3600
                     elif (output_name == 'RAINRATE'):
-                        divisor = 1000/3600 #rainfall is in m 
+                        divisor = 3600/1000 #rainfall is in m and this is a divisor, so flip the 1000/3600 that we would expect
                     else:
                         divisor = 1
 
@@ -323,18 +327,18 @@ def run(start_date, end_date, freq_want, save_location, geo_file):
 
         data_set_save = xr.Dataset(
             {
-                name_variables[0]:variables_to_save[name_variables[0]].isel(Time=index_not_LW),
-                name_variables[1]:variables_to_save[name_variables[1]].isel(Time=index_not_LW),
-                name_variables[2]:variables_to_save[name_variables[2]].isel(Time=index_not_LW),
-                name_variables[3]:variables_to_save[name_variables[3]].isel(Time=index_not_LW),
-                name_variables[4]:variables_to_save[name_variables[4]].isel(Time=index_not_LW),
-                name_variables[5]:variables_to_save[name_variables[5]].isel(Time=index_not_LW),
-                name_variables[6]:variables_to_save[name_variables[6]].isel(Time=index_not_LW),
-                name_variables[7]:variables_to_save[name_variables[7]].isel(Time=index_LW),
+                name_variables[0]:variables_to_save[name_variables[0]].isel(Time=[index_not_LW]),
+                name_variables[1]:variables_to_save[name_variables[1]].isel(Time=[index_not_LW]),
+                name_variables[2]:variables_to_save[name_variables[2]].isel(Time=[index_not_LW]),
+                name_variables[3]:variables_to_save[name_variables[3]].isel(Time=[index_not_LW]),
+                name_variables[4]:variables_to_save[name_variables[4]].isel(Time=[index_not_LW]),
+                name_variables[5]:variables_to_save[name_variables[5]].isel(Time=[index_not_LW]),
+                name_variables[6]:variables_to_save[name_variables[6]].isel(Time=[index_not_LW]),
+                name_variables[7]:variables_to_save[name_variables[7]].isel(Time=[index_LW]),
             },
             attrs = {'TITLE':'Output from Python Re-grid',
                      'WEST-EAST_GRID_DIMENSION':geogrid.attrs['WEST-EAST_GRID_DIMENSION'],
-                     'SOUTH-NORHT_GRID_DIMENSION':geogrid.attrs['SOUTH-NORTH_GRID_DIMENSION'],
+                     'SOUTH-NORTH_GRID_DIMENSION':geogrid.attrs['SOUTH-NORTH_GRID_DIMENSION'],
                      'DX':geogrid.attrs['DX'],
                      'DY':geogrid.attrs['DY'],
                      'TRUELAT1':geogrid.attrs['TRUELAT1'],
@@ -343,25 +347,29 @@ def run(start_date, end_date, freq_want, save_location, geo_file):
                      'LO1':geogrid.attrs['corner_lons'][0],
                      'STAND_LON':geogrid.attrs['STAND_LON'],
                      'MAP_PROJ':geogrid.attrs['MAP_PROJ'],
+                     'GRID_ID':geogrid.attrs['grid_id'],
+                     'ISWATER':geogrid.attrs['ISWATER'],
+                     'ISURBAN':geogrid.attrs['ISURBAN'],
+                     'ISICE':geogrid.attrs['ISICE'],
                      'MMINLU':geogrid.attrs['MMINLU'],
-                    }
+            }
 
 
         )
 
         if save_location.startswith('s3://'):
            # First write the file locally in the current directory
-           data_set_save.to_netcdf(file_name)
+           data_set_save.to_netcdf(output_file_name)
 
            # Now, use aws cli to upload
            # Make sure there isn't an extra slash
            # at the end
            save_location = save_location.strip('/')
-           output_path = f'{save_location}/{file_name}'
-           os.system(f'aws s3 cp {file_name} {output_path}')
+           output_path = f'{save_location}/{output_file_name}'
+           os.system(f'aws s3 cp {output_file_name} {output_path}')
 
         else:
-            data_set_save.to_netcdf(save_location+output_file_name)
+            data_set_save.to_netcdf(f'{save_location}{output_file_name}')
 ## end of run block
 
 
